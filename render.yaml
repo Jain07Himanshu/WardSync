@@ -1,0 +1,48 @@
+# Render Infrastructure as Code Blueprint for WardSync
+# Deploy both Backend API and Frontend Static Site with one click on Render!
+
+services:
+  # ============================================================================
+  # 1. Backend API Web Service (FastAPI + GenAI Engines)
+  # ============================================================================
+  - type: web
+    name: wardsync-api
+    runtime: python
+    plan: free
+    region: oregon
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn unified_server:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: AI_PROVIDER
+        value: gemini
+      - key: AI_MODEL
+        value: gemini-1.5-flash
+      - key: GEMINI_API_KEY
+        sync: false # Render will securely prompt you for this key
+      - key: DATABASE_URL
+        value: sqlite:///./civic_engine.db
+
+  # ============================================================================
+  # 2. Frontend Static Site (React 19 + TypeScript + Vite)
+  # ============================================================================
+  - type: web
+    name: wardsync-frontend
+    runtime: static
+    plan: free
+    region: oregon
+    rootDir: wardsync-frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: wardsync-api
+          property: host

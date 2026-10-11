@@ -1,0 +1,23 @@
+@import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
+
+/* Custom subtle styles */
+:root {
+  color-scheme: light;
+}
+
+body {
+  background-color: #ffffff;
+  color: #0f172a;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* Custom leaflet marker styling if needed */
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  border-radius: 0.75rem;
+  z-index: 10;
+}

@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  civic-engine:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - AI_PROVIDER=openai
+      - AI_MODEL=gpt-4o-mini
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - DATABASE_URL=postgresql://civic_user:civic_pass@db:5432/civic_db
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: civic_user
+      POSTGRES_PASSWORD: civic_pass
+      POSTGRES_DB: civic_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
